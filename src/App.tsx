@@ -1,3 +1,10 @@
+import useWebSocket from './useWebSocket';
+
 export default function App() {
-  return <div>FTC Radar App</div>;
+  const {connected} = useWebSocket();
+  return (
+    <div>
+      FTC Radar App <strong>{connected}</strong>
+    </div>
+  );
 }
