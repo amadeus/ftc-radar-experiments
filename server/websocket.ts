@@ -19,7 +19,7 @@ server.on('connection', (socket: WebSocket) => {
     const update = updates[index];
     socket.send(JSON.stringify(update));
     index++;
-  }, 1000);
+  }, 200);
 
   socket.on('close', () => {
     console.log('WebSocket: Client Disconnected');

@@ -9,7 +9,7 @@ import mapImage from './assets/map-test.jpg';
 
 function getPositionStyles(x: number, y: number, width: number, height: number) {
   return {
-    top: `${(y / height) * 100}%`,
+    top: `${((height - y) / height) * 100}%`,
     left: `${(x / width) * 100}%`,
   };
 }
@@ -19,34 +19,34 @@ interface MapProps {
 }
 
 export default memo(function MapProps({states}: MapProps) {
-  // console.log('ZZZZZ - states', states);
   return (
     <div className={styles.map}>
       <img src={mapImage} className={styles.image} />
-      {states.map(({aircrafts, armies, mission_time, battle_area}) => {
-        const armyRecord: Record<number, Army | undefined> = {};
-        for (const army of armies) {
-          armyRecord[army.id] = army;
-        }
-        console.log('ZZZZZ - armyRecord', armyRecord);
-        const renderedAircraft = [];
-        for (const aircraft of aircrafts) {
-          const army = armyRecord[aircraft.army];
-          if (army == null) continue;
-          renderedAircraft.push(
-            <div
-              key={aircraft.id}
-              className={classNames({
-                [styles.aircraft]: true,
-                [styles.army1]: army.id === 1,
-                [styles.army2]: army.id === 2,
-              })}
-              style={getPositionStyles(aircraft.x, aircraft.y, battle_area.w, battle_area.h)}
-            />
-          );
-        }
-        return <Fragment key={mission_time}>{renderedAircraft}</Fragment>;
-      })}
+      <div className={styles.offsetHack}>
+        {states.map(({aircrafts, armies, mission_time, battle_area}) => {
+          const armyRecord: Record<number, Army | undefined> = {};
+          for (const army of armies) {
+            armyRecord[army.id] = army;
+          }
+          const renderedAircraft = [];
+          for (const aircraft of aircrafts) {
+            const army = armyRecord[aircraft.army];
+            if (army == null) continue;
+            renderedAircraft.push(
+              <div
+                key={aircraft.id}
+                className={classNames({
+                  [styles.aircraft]: true,
+                  [styles.army1]: army.id === 1,
+                  [styles.army2]: army.id === 2,
+                })}
+                style={getPositionStyles(aircraft.x, aircraft.y, battle_area.w, battle_area.h)}
+              />
+            );
+          }
+          return <Fragment key={mission_time}>{renderedAircraft}</Fragment>;
+        })}
+      </div>
     </div>
   );
 });

@@ -1,10 +1,20 @@
 .map {
   position: relative;
+  width: 5000px;
+}
+
+.offsetHack {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  left: -6%;
+  top: 4.8%;
 }
 
 .image {
+  position: relative;
   display: block;
-  width: 100%;
+  width: 5000px;
   height: auto;
   z-index: 0;
 }
