@@ -13,6 +13,9 @@ server.on('connection', (socket: WebSocket) => {
 
   let index = 0;
   const interval = setInterval(() => {
+    if (index >= updates.length) {
+      index = 0;
+    }
     const update = updates[index];
     socket.send(JSON.stringify(update));
     index++;
