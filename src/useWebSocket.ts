@@ -1,38 +1,8 @@
 import {useEffect, useState} from 'react';
-
-interface Aircraft {
-  army: number;
-  id: string;
-  x: number;
-  y: number;
-  z: number;
-}
-
-interface Army {
-  id: number;
-  countries: string;
-  name: string;
-}
-
-export interface WorldStateItem {
-  aircrafts: Aircraft[];
-  armies: Army[];
-  battle_area: {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-    sectory_size: number;
-  };
-  map_Name: string;
-  // FIXME: Can this annotation be improved?
-  mission_time: string;
-}
-
-type ConnectionState = 'disconnected' | 'connecting' | 'connected';
+import type {WorldStateItem, WebsocketConnectionState} from './types';
 
 export default function useWebSocket(port = 8020) {
-  const [connected, setConnected] = useState<ConnectionState>('disconnected');
+  const [connected, setConnected] = useState<WebsocketConnectionState>('disconnected');
   const [states, setStates] = useState<WorldStateItem[]>([]);
   useEffect(() => {
     const socket = new WebSocket(`ws://localhost:${port}`);

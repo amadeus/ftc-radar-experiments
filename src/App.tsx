@@ -1,10 +1,13 @@
 import useWebSocket from './useWebSocket';
+import Map from './Map';
+import Toolbar from './Toolbar';
 
 export default function App() {
-  const {connected} = useWebSocket();
+  const {connected, states} = useWebSocket();
   return (
     <div>
-      FTC Radar App <strong>{connected}</strong>
+      <Map states={states} />
+      <Toolbar connected={connected} />
     </div>
   );
 }

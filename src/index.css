@@ -170,6 +170,7 @@
 
   body::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
     background: var(--color-black);
   }
 

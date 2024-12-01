@@ -1,0 +1,25 @@
+.map {
+  position: relative;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  z-index: 0;
+}
+
+.aircraft {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.army1 {
+  background-color: red;
+}
+
+.army2 {
+  background-color: blue;
+}
