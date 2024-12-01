@@ -1,68 +1,215 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-thin.woff2') format('woff2');
+  font-weight: 200;
+  font-style: thin;
+}
+
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-thinoblq.woff2') format('woff2');
+  font-weight: 200;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-lightoblq.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-reg.woff2') format('woff2');
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-style: normal;
 }
 
-a {
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-regoblq.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-med.woff2') format('woff2');
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  font-style: normal;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-medoblq.woff2') format('woff2');
   font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  font-style: italic;
 }
 
-@media (prefers-color-scheme: light) {
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-bold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-boldoblq.woff2') format('woff2');
+  font-weight: 600;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-black.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-blackoblq.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-ultra.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: intervogue-alt;
+  src: url('/src/assets/fonts/intervoguesoftalt-ultraoblq.woff2') format('woff2');
+  font-weight: 800;
+  font-style: italic;
+}
+
+@layer reset, icons, leaflet, map, components, components-mod;
+
+@layer reset {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    --font-default-family: intervogue-alt;
+    --color-beige: #bcbaa4;
+    --color-pure-black: #000000;
+    --color-black: #222222;
+    --color-pure-black: #000000;
+    --color-half-black: #181818aa;
+    --color-red: #890000;
+    --color-yellow: #ffde00;
+    --color-brown: #533700;
+    --color-white: #e0dfdc;
+    --color-pure-white: #ffffff;
+    --color-white-alpha: #e5e5e544;
+    --color-blue: #00388b;
+    --color-green: #065600;
+    --color-grey: #373737;
+    --color-purple: #330e60;
+    --black-alt-opacity: 0.2;
+    --font-size-smol: 12px;
+    --font-size-default: 16px;
+    --font-size-medium: 18px;
+    --font-size-large: 24px;
+    --font-size-yuge: 32px;
+    --line-height-smol: 16px;
+    --line-height-default: 22px;
+    --line-height-medium: 24px;
+    --line-height-large: 32px;
+    --line-height-yuge: 44px;
+    --stack-gap: 12px;
+    --stack-gap-smol: 6px;
+    --content-width: 640px;
+    --sidebar-width: 280px;
+    --header-height: 60px;
+    --scrollbar-size: 0px;
   }
-  a:hover {
-    color: #747bff;
+
+  @supports selector(::-webkit-scrollbar-thumb) {
+    :root {
+      --scrollbar-size: 4px;
+    }
   }
-  button {
-    background-color: #f9f9f9;
+
+  @supports (-webkit-touch-callout: none) {
+    :root {
+      --scrollbar-size: 0px;
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  html,
+  body {
+    background-color: var(--color-white);
+    color: var(--color-black);
+    font-family: var(--font-default-family);
+    font-weight: 500;
+    font-size: var(--font-size-default);
+    line-height: 1.375;
+    min-width: 320px;
+    -webkit-tap-highlight-color: transparent;
+    /* Unclear if this will be a good idea or not... but lets give it a try
+     * until there's a bug or someone complains */
+    user-select: none;
+  }
+
+  body::-webkit-scrollbar {
+    width: 6px;
+    background: var(--color-black);
+  }
+
+  body::-webkit-scrollbar-track {
+    background: var(--color-black);
+  }
+
+  body::-webkit-scrollbar-thumb {
+    background-color: var(--color-white);
+    border: 2px solid var(--color-black);
+    border-radius: 0;
+  }
+
+  @supports (-moz-appearance: none) {
+    body {
+      scrollbar-width: thin;
+    }
+  }
+
+  a {
+    color: var(--color-black);
+    text-decoration: underline;
+    font-weight: 600;
+  }
+
+  * {
+    color: inherit;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font-family: var(--font-default-family);
+    font-size: var(--font-size-default);
+  }
+
+  [data-drag] {
+    cursor: grab;
   }
 }
