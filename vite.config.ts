@@ -5,6 +5,7 @@ import {PORT} from './server/server_constants';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: {include: ['three']},
   server: {
     proxy: {
       '/ws': {
