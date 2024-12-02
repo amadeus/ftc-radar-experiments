@@ -22,9 +22,19 @@ export interface WorldStateItem {
     h: number;
     sector_size: number;
   };
-  map_Name: string;
+  map_name: string;
   // FIXME: Can this annotation be improved?
   mission_time: string;
 }
 
 export type WebsocketConnectionState = 'disconnected' | 'connecting' | 'connected';
+
+export interface SocketUpdate {
+  type: 'update';
+  data: WorldStateItem;
+}
+
+export interface SocketInit {
+  type: 'init';
+  data: WorldStateItem[];
+}

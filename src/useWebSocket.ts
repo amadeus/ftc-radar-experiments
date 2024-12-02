@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import type {WorldStateItem, WebsocketConnectionState} from './types';
+import type {WorldStateItem, WebsocketConnectionState, SocketInit, SocketUpdate} from '../types';
 
 export default function useWebSocket(port = 8020) {
   const [connected, setConnected] = useState<WebsocketConnectionState>('disconnected');
@@ -14,15 +14,22 @@ export default function useWebSocket(port = 8020) {
     });
     socket.addEventListener('message', (event) => {
       try {
-        const state: WorldStateItem = JSON.parse(event.data);
-        setStates((previousStates) => {
-          const states = [...previousStates];
-          states.push(state);
-          if (states.length > 20) {
-            states.shift();
-          }
-          return states;
-        });
+        const payload: SocketUpdate | SocketInit = JSON.parse(event.data);
+        switch (payload.type) {
+          case 'init':
+            setStates(payload.data);
+            break;
+          case 'update':
+            setStates((previousStates) => {
+              const states = [...previousStates];
+              states.push(payload.data);
+              if (states.length > 20) {
+                states.shift();
+              }
+              return states;
+            });
+            break;
+        }
       } catch (e) {
         console.error(e);
       }

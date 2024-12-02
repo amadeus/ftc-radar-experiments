@@ -1,6 +1,6 @@
 import {memo, Fragment} from 'react';
 import classNames from 'classnames';
-import type {WorldStateItem, Army} from './types';
+import type {WorldStateItem, Army} from '../types';
 import styles from './Map.module.css';
 import mapImage from './assets/map-test.jpg';
 

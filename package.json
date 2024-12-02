@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "tsc": "tsc",
+    "tsc-app": "tsc --noEmit --project tsconfig.app.json",
+    "tsc-server": "tsc --noEmit --project ./server/tsconfig.json",
     "server": "bun server/websocket.ts"
   },
   "dependencies": {

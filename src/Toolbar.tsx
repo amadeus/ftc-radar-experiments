@@ -1,5 +1,5 @@
 import {memo} from 'react';
-import type {WebsocketConnectionState} from './types';
+import type {WebsocketConnectionState} from '../types';
 import styles from './Toolbar.module.css';
 
 interface ToolbarProps {
