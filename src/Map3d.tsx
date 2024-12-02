@@ -1,7 +1,8 @@
 import {memo, Fragment} from 'react';
 import type {WorldStateItem, Army} from '../types';
 import {useTexture} from '@react-three/drei';
-import mapImage from './assets/map-test.jpg';
+import mapImage from './assets/map-test-large.jpg';
+import {DoubleSide} from 'three';
 
 const WIDTH = 5000 / 1000;
 const HEIGHT = 4297 / 1000;
@@ -48,7 +49,7 @@ export default memo(function Map3d({states}: Map3dProps) {
     <group position={[0, 0, 0]}>
       <mesh>
         <planeGeometry args={[5, 4.297]} />
-        <meshStandardMaterial map={texture} />
+        <meshStandardMaterial map={texture} side={DoubleSide} />
       </mesh>
       {states.map(({aircrafts, armies, mission_time, battle_area}) => {
         const armyRecord: Record<number, Army | undefined> = {};
