@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "tsc-app": "tsc --noEmit --project tsconfig.app.json",
     "tsc-server": "tsc --noEmit --project ./server/tsconfig.json",
-    "server": "bun server/websocket.ts"
+    "server": "bun server/main.ts"
   },
   "dependencies": {
     "classnames": "^2.5.1",
