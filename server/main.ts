@@ -2,6 +2,7 @@ import {WebSocketServer, type WebSocket} from 'ws';
 import updates from './updates.json';
 import type {WorldStateItem, SocketUpdate, SocketInit} from '../types';
 import {PORT, UPDATE_RATE} from './server_constants';
+import {SocketActions} from '../constants';
 
 const server = new WebSocketServer({port: PORT});
 
@@ -18,21 +19,25 @@ function iterateOverSockets() {
     intervalId = null;
     return;
   }
-  let initialData: SocketInit | undefined;
+  let initialDataJSON: string | undefined;
+  // Loop the upates... because
   if (index >= updates.length) {
     index = 0;
     worldState = [];
-    initialData = {type: 'init', data: []};
+    initialDataJSON = JSON.stringify({type: SocketActions.INITIALIZE, data: []} as SocketInit);
   }
   const update: WorldStateItem = updates[index];
-  if (update == null) throw new Error('iterateOverSockets: Invalid update');
+  if (update == null) {
+    index = 0;
+    worldState = [];
+    throw new Error('iterateOverSockets: Invalid update');
+  }
   worldState.push(update);
   while (worldState.length > 20) {
     worldState.shift();
   }
 
-  const updateDataJSON = JSON.stringify({type: 'update', data: update} as SocketUpdate);
-  const initialDataJSON = initialData != null ? JSON.stringify(initialData) : undefined;
+  const updateDataJSON = JSON.stringify({type: SocketActions.UPDATE, data: update} as SocketUpdate);
   for (const socket of connectedSockets) {
     if (initialDataJSON != null) {
       socket.send(initialDataJSON);
