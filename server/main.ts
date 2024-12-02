@@ -22,7 +22,7 @@ function iterateOverSockets() {
   if (index >= updates.length) {
     index = 0;
     worldState = [];
-    initialData = {type: 'init', data: worldState};
+    initialData = {type: 'init', data: []};
   }
   const update: WorldStateItem = updates[index];
   if (update == null) throw new Error('iterateOverSockets: Invalid update');
