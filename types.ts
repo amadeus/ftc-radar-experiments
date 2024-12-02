@@ -38,3 +38,5 @@ export interface SocketInit {
   type: 'init';
   data: WorldStateItem[];
 }
+
+export type Tuple = [number, number];
