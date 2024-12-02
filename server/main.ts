@@ -1,9 +1,7 @@
 import {WebSocketServer, type WebSocket} from 'ws';
 import updates from './updates.json';
 import type {WorldStateItem, SocketUpdate, SocketInit} from '../types';
-
-const PORT = 8020;
-const UPDATE_RATE = 200;
+import {PORT, UPDATE_RATE} from './server_constants';
 
 const server = new WebSocketServer({port: PORT});
 

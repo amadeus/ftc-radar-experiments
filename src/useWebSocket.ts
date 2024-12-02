@@ -5,7 +5,7 @@ export default function useWebSocket(port = 8020) {
   const [connected, setConnected] = useState<WebsocketConnectionState>('disconnected');
   const [states, setStates] = useState<WorldStateItem[]>([]);
   useEffect(() => {
-    const socket = new WebSocket(`ws://localhost:${port}`);
+    const socket = new WebSocket('/ws');
     setConnected('connecting');
 
     socket.addEventListener('open', (event) => {
