@@ -1,7 +1,8 @@
 import {useEffect, useState} from 'react';
 import type {WorldStateItem, WebsocketConnectionState, SocketInit, SocketUpdate} from '../types';
+import {MAX_WORLD_STATES, SocketActions} from '../constants';
 
-export default function useWebSocket(port = 8020) {
+export default function useWebSocket() {
   const [connected, setConnected] = useState<WebsocketConnectionState>('disconnected');
   const [states, setStates] = useState<WorldStateItem[]>([]);
   useEffect(() => {
@@ -16,14 +17,14 @@ export default function useWebSocket(port = 8020) {
       try {
         const payload: SocketUpdate | SocketInit = JSON.parse(event.data);
         switch (payload.type) {
-          case 'init':
+          case SocketActions.INITIALIZE:
             setStates(payload.data);
             break;
-          case 'update':
+          case SocketActions.UPDATE:
             setStates((previousStates) => {
               const states = [...previousStates];
               states.push(payload.data);
-              if (states.length > 20) {
+              if (states.length > MAX_WORLD_STATES) {
                 states.shift();
               }
               return states;
@@ -44,6 +45,6 @@ export default function useWebSocket(port = 8020) {
     return () => {
       socket.close();
     };
-  }, [port]);
+  }, []);
   return {connected, states};
 }
