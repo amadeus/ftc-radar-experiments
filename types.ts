@@ -42,3 +42,24 @@ export interface SocketInit {
 }
 
 export type Tuple = [number, number];
+
+export type STruple = [string, string, string];
+
+export type SquadronId = `${number}.${string}`;
+
+export interface PathPoint {
+  mission_time: string;
+  x: number;
+  y: number;
+  z: number;
+}
+
+export interface PathContext {
+  id: SquadronId;
+  units: number;
+  army: number;
+}
+
+export interface Path extends PathContext {
+  points: PathPoint[];
+}
