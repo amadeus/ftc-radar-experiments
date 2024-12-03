@@ -1,8 +1,30 @@
 import {WebSocketServer, type WebSocket} from 'ws';
-import updates from './updates.json';
 import type {WorldStateItem, SocketUpdate, SocketInit} from '../types';
 import {PORT, UPDATE_RATE} from './server_constants';
 import {SocketActions} from '../constants';
+
+const updates = (await Bun.file('./server/updates-gzip.txt').text()).split('\n');
+
+function decodeUpdate(updateFromServer: string, index: number) {
+  if (updateFromServer.trim() === '') {
+    return null;
+  }
+  try {
+    const binary = new Uint8Array(
+      atob(updateFromServer)
+        .split('')
+        .map((char) => char.charCodeAt(0))
+    ).slice(4);
+    const ret = new Function(`return ${new TextDecoder().decode(Bun.gunzipSync(binary))}`)();
+    return ret as WorldStateItem;
+  } catch (e) {
+    console.log(`DECODE FAILURE =======================================`);
+    console.error(e);
+    console.log(`======================================================`);
+    console.log(`Crashed on line: ${index} with data: "${updateFromServer}"`);
+    return null;
+  }
+}
 
 const server = new WebSocketServer({port: PORT});
 
@@ -26,11 +48,12 @@ function iterateOverSockets() {
     worldState = [];
     initialDataJSON = JSON.stringify({type: SocketActions.INITIALIZE, data: []} as SocketInit);
   }
-  const update: WorldStateItem = updates[index];
+  const update: WorldStateItem | null = decodeUpdate(updates[index], index);
   if (update == null) {
     index = 0;
     worldState = [];
-    throw new Error('iterateOverSockets: Invalid update');
+    console.error('iterateOverSockets: Invalid update, restarting');
+    return;
   }
   worldState.push(update);
   while (worldState.length > 20) {

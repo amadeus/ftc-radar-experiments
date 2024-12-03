@@ -68,7 +68,7 @@ export default memo(function Map3d({states}: Map3dProps) {
             />
           );
         }
-        return <Fragment key={mission_time}>{renderedAircraft}</Fragment>;
+        return renderedAircraft.length > 0 ? <Fragment key={mission_time}>{renderedAircraft}</Fragment> : null;
       })}
     </group>
   );
