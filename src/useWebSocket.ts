@@ -1,10 +1,9 @@
 import {useEffect, useState} from 'react';
-import type {WorldStateItem, WebsocketConnectionState, SocketInit, SocketUpdate} from '../types';
-import {MAX_WORLD_STATES, SocketActions} from '../constants';
+import type {WebsocketConnectionState, SocketInit, SocketUpdate} from '../types';
+import Store from './Store';
 
 export default function useWebSocket() {
   const [connected, setConnected] = useState<WebsocketConnectionState>('disconnected');
-  const [states, setStates] = useState<WorldStateItem[]>([]);
   useEffect(() => {
     const socket = new WebSocket('/ws');
     setConnected('connecting');
@@ -16,21 +15,7 @@ export default function useWebSocket() {
     socket.addEventListener('message', (event) => {
       try {
         const payload: SocketUpdate | SocketInit = JSON.parse(event.data);
-        switch (payload.type) {
-          case SocketActions.INITIALIZE:
-            setStates(payload.data);
-            break;
-          case SocketActions.UPDATE:
-            setStates((previousStates) => {
-              const states = [...previousStates];
-              states.push(payload.data);
-              if (states.length > MAX_WORLD_STATES) {
-                states.shift();
-              }
-              return states;
-            });
-            break;
-        }
+        Store.getState().dispatch(payload);
       } catch (e) {
         console.error(e);
       }
@@ -42,9 +27,7 @@ export default function useWebSocket() {
       setConnected('disconnected');
       console.log('useWebSocket.close', event);
     });
-    return () => {
-      socket.close();
-    };
+    return () => socket.close();
   }, []);
-  return {connected, states};
+  return connected;
 }
