@@ -7,7 +7,6 @@ export default function useWebSocket() {
   useEffect(() => {
     const socket = new WebSocket('/ws');
     setConnected('connecting');
-
     socket.addEventListener('open', (event) => {
       setConnected('connected');
       console.log('useWebSocket.open', event);
