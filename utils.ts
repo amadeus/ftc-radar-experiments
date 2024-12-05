@@ -15,12 +15,12 @@ export function parseId(id: string): ParsedId {
     throw new Error(`parseId: ID does not contain 3 parts: ${id}, ${pieces}`);
   }
   const squadronSpawnIndex = parseInt(pieces[0], 10);
-  const unit = parseInt(pieces[2], 10);
-  if (isNaN(unit) || isNaN(squadronSpawnIndex)) {
-    throw new Error(`parseId: unit: ${unit}, or squadronSpawnIndex: ${squadronSpawnIndex} are not valid numbers`);
+  const unitId = parseInt(pieces[2], 10);
+  if (isNaN(unitId) || isNaN(squadronSpawnIndex)) {
+    throw new Error(`parseId: unit: ${unitId}, or squadronSpawnIndex: ${squadronSpawnIndex} are not valid numbers`);
   }
   return {
     squadronId: `${squadronSpawnIndex}.${pieces[1]}`,
-    unitId: 1,
+    unitId,
   };
 }
