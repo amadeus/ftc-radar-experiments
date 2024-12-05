@@ -13,15 +13,22 @@
     "server": "bun server/main.ts"
   },
   "dependencies": {
+    "@react-spring/three": "^9.7.5",
+    "@react-three/drei": "^9.119.0",
+    "@react-three/fiber": "^8.17.10",
     "classnames": "^2.5.1",
     "prettier": "^3.4.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "three": "^0.171.0",
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
+    "@types/bun": "^1.1.14",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@types/three": "^0.170.0",
     "@types/ws": "^8.5.13",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "eslint": "^9.15.0",
@@ -34,8 +41,5 @@
     "ws": "^8.18.0"
   },
   "prettier": "./prettier.json",
-  "packageManager": "pnpm@9.14.4",
-  "engines": {
-    "node": "20.x"
-  }
+  "packageManager": "pnpm@9.14.4"
 }

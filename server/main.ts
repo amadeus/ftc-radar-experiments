@@ -1,7 +1,29 @@
 import {WebSocketServer, type WebSocket} from 'ws';
-import updates from './updates.json';
 import type {WorldStateItem, SocketUpdate, SocketInit} from '../types';
 import {PORT, UPDATE_RATE} from './server_constants';
+import {SocketActions} from '../constants';
+
+const updates = (await Bun.file('./server/updates-gzip.txt').text()).split('\n');
+
+function decodeUpdate(updateFromServer: string, index: number) {
+  if (updateFromServer.trim() === '') {
+    return null;
+  }
+  try {
+    const binary = new Uint8Array(
+      atob(updateFromServer)
+        .split('')
+        .map((char) => char.charCodeAt(0))
+    );
+    return JSON.parse(new TextDecoder().decode(Bun.gunzipSync(binary)));
+  } catch (e) {
+    console.log(`DECODE FAILURE =======================================`);
+    console.error(e);
+    console.log(`======================================================`);
+    console.log(`Crashed on line: ${index} with data: "${updateFromServer}"`);
+    return null;
+  }
+}
 
 const server = new WebSocketServer({port: PORT});
 
@@ -18,28 +40,33 @@ function iterateOverSockets() {
     intervalId = null;
     return;
   }
-  let initialData: SocketInit | undefined;
+  let initialDataJSON: string | undefined;
+  // Loop the upates... because
   if (index >= updates.length) {
     index = 0;
     worldState = [];
-    initialData = {type: 'init', data: worldState};
+    initialDataJSON = JSON.stringify({type: SocketActions.INITIALIZE, data: []} as SocketInit);
   }
-  const update: WorldStateItem = updates[index];
-  if (update == null) throw new Error('iterateOverSockets: Invalid update');
+  const update: WorldStateItem | null = decodeUpdate(updates[index], index);
+  if (update == null) {
+    index = 0;
+    worldState = [];
+    console.error('iterateOverSockets: Invalid update, restarting');
+    return;
+  }
   worldState.push(update);
   while (worldState.length > 20) {
     worldState.shift();
   }
 
-  const updateDataJSON = JSON.stringify({type: 'update', data: update} as SocketUpdate);
-  const initialDataJSON = initialData != null ? JSON.stringify(initialData) : undefined;
+  const updateDataJSON = JSON.stringify({type: SocketActions.UPDATE, data: update} as SocketUpdate);
   for (const socket of connectedSockets) {
     if (initialDataJSON != null) {
       socket.send(initialDataJSON);
     }
     socket.send(updateDataJSON);
   }
-  index++;
+  index += 10;
 }
 
 console.log(`WebSocket server is running on ws://localhost:${PORT}`);
@@ -53,7 +80,7 @@ server.on('connection', (socket: WebSocket) => {
     console.log('WebSocket: Client Disconnected');
   });
 
-  socket.send(JSON.stringify({type: 'init', data: worldState}));
+  socket.send(JSON.stringify({type: SocketActions.INITIALIZE, data: worldState} as SocketInit));
   if (intervalId == null) {
     console.log('WebSocket: Beginning update loop');
     intervalId = setInterval(iterateOverSockets, UPDATE_RATE);
