@@ -15,8 +15,7 @@ function decodeUpdate(updateFromServer: string, index: number) {
         .split('')
         .map((char) => char.charCodeAt(0))
     );
-    const ret = new Function(`return ${new TextDecoder().decode(Bun.gunzipSync(binary))}`)();
-    return ret as WorldStateItem;
+    return JSON.parse(new TextDecoder().decode(Bun.gunzipSync(binary)));
   } catch (e) {
     console.log(`DECODE FAILURE =======================================`);
     console.error(e);
@@ -67,7 +66,7 @@ function iterateOverSockets() {
     }
     socket.send(updateDataJSON);
   }
-  index++;
+  index += 10;
 }
 
 console.log(`WebSocket server is running on ws://localhost:${PORT}`);
@@ -81,7 +80,7 @@ server.on('connection', (socket: WebSocket) => {
     console.log('WebSocket: Client Disconnected');
   });
 
-  socket.send(JSON.stringify({type: 'init', data: worldState}));
+  socket.send(JSON.stringify({type: SocketActions.INITIALIZE, data: worldState} as SocketInit));
   if (intervalId == null) {
     console.log('WebSocket: Beginning update loop');
     intervalId = setInterval(iterateOverSockets, UPDATE_RATE);
