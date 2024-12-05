@@ -14,7 +14,7 @@ function decodeUpdate(updateFromServer: string, index: number) {
       atob(updateFromServer)
         .split('')
         .map((char) => char.charCodeAt(0))
-    ).slice(4);
+    );
     const ret = new Function(`return ${new TextDecoder().decode(Bun.gunzipSync(binary))}`)();
     return ret as WorldStateItem;
   } catch (e) {
