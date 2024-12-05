@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 import type {SocketUpdate, SocketInit, WorldStateItem, Path, SquadronId} from '../types';
 import {MAX_WORLD_STATES, SocketActions} from '../constants';
-import {Vector3} from 'three';
+import {Vector3, Vector2} from 'three';
 import {parseId} from '../utils';
 
 type SocketPayload = SocketUpdate | SocketInit;
@@ -101,21 +101,39 @@ function processAircraft(state: WorldStateItem) {
       }
     }
     sum.divideScalar(squadronState.points.length + 2);
+    const currentPosition = {
+      mission_time: state.mission_time,
+      x: sum.x,
+      y: sum.y,
+      z: sum.z,
+    };
     squadronPoints.push({
       id: squadronState.squadronId,
       units: squadronState.points.length,
       army: squadronState.army,
-      points: [
-        {
-          mission_time: state.mission_time,
-          x: sum.x,
-          y: sum.y,
-          z: sum.z,
-        },
-      ],
+      currentPosition,
+      points: [currentPosition],
     });
   }
   return squadronPoints;
+}
+
+// NOTE(amadeus): This is horrible AI code lol.. probably revisit it for proper
+// type safety...
+function timeToMilliseconds(timeStr: string) {
+  const [hours, minutes, seconds] = timeStr.split(':');
+  const [secs, millis] = seconds.split('.');
+  return parseInt(hours) * 3600000 + parseInt(minutes) * 60000 + parseInt(secs) * 1000 + parseInt(millis);
+}
+
+// NOTE(amadeus): This is horrible AI code lol.. probably revisit it for proper
+// type safety...
+function checkTimeDifference(time1: string, time2: string) {
+  const time1Ms = timeToMilliseconds(time1);
+  const time2Ms = timeToMilliseconds(time2);
+  const diff = Math.abs(time1Ms - time2Ms);
+  const tenMinutesInMs = 10 * 60 * 1000;
+  return diff > tenMinutesInMs;
 }
 
 // Take newly generated paths from a state update and mix them into existing
@@ -130,10 +148,20 @@ function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>): Map<SquadronI
     if (oldPath == null) {
       paths.set(path.id, path);
     } else {
-      oldPath = {...oldPath, points: [...oldPath.points, path.points[0]]};
-      // TODO(amadeus): We should also drop points based on mission time/color
-      // coding rules
-      while (oldPath.points.length > MAX_WORLD_STATES) {
+      oldPath = {...oldPath, currentPosition: path.currentPosition};
+      const lastPoint = oldPath.points[oldPath.points.length - 1];
+      const {currentPosition} = path;
+      const oldPointVector = new Vector2(lastPoint.x, lastPoint.y);
+      const newPointVector = new Vector2(currentPosition.x, currentPosition.y);
+      const distance = Math.abs(oldPointVector.distanceTo(newPointVector));
+      // If we've travelled far enough to warrant another arrow, lets add it
+      if (distance > 6000) {
+        oldPath.points = [...oldPath.points, currentPosition];
+      }
+      while (
+        oldPath.points.length > 1 &&
+        checkTimeDifference(currentPosition.mission_time, oldPath.points[0].mission_time)
+      ) {
         oldPath.points.shift();
       }
       paths.set(oldPath.id, oldPath);

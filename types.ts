@@ -61,5 +61,6 @@ export interface PathContext {
 }
 
 export interface Path extends PathContext {
+  currentPosition: PathPoint;
   points: PathPoint[];
 }

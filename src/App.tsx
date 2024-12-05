@@ -6,7 +6,6 @@ import {OrbitControls} from '@react-three/drei';
 import Toolbar from './Toolbar';
 import {Vector3} from 'three';
 import type {Tuple} from '../types';
-import useStore from './Store';
 
 const MIN_Z_CAMERA = 0.8273704858012328;
 const MAX_Z_CAMERA = 6.386383017550268;
@@ -92,14 +91,13 @@ function Controls() {
 
 export default function App() {
   const connected = useWebSocket();
-  const states = useStore(({worldState}) => worldState);
   return (
     <>
-      <Canvas style={{height: '100vh', backgroundColor: 'black'}} camera={{position: [0, 0, 5], fov: 10}}>
+      <Canvas style={{height: '100vh', backgroundColor: 'black'}} camera={{position: [0, 0, 5], fov: 40}} shadows>
         <Controls />
-        <Map3d states={states} />
+        <Map3d />
         <ambientLight intensity={0.5} />
-        <directionalLight position={[0, 0, 5]} />
+        <directionalLight position={[-2, -3, 5]} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
       </Canvas>
       <Toolbar connected={connected} />
     </>
