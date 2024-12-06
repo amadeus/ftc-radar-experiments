@@ -9,18 +9,20 @@ function decodeUpdate(updateFromServer: string, index: number) {
   if (updateFromServer.trim() === '') {
     return null;
   }
+  let textContent: string | undefined;
   try {
     const binary = new Uint8Array(
       atob(updateFromServer)
         .split('')
         .map((char) => char.charCodeAt(0))
     );
-    return JSON.parse(new TextDecoder().decode(Bun.gunzipSync(binary)));
+    textContent = new TextDecoder().decode(Bun.gunzipSync(binary));
+    return JSON.parse(textContent);
   } catch (e) {
     console.log(`DECODE FAILURE =======================================`);
     console.error(e);
     console.log(`======================================================`);
-    console.log(`Crashed on line: ${index} with data: "${updateFromServer}"`);
+    console.log(`Crashed on line: ${index} with data: "${textContent ?? updateFromServer}"`);
     return null;
   }
 }
@@ -66,7 +68,7 @@ function iterateOverSockets() {
     }
     socket.send(updateDataJSON);
   }
-  index += 10;
+  index += 3;
 }
 
 console.log(`WebSocket server is running on ws://localhost:${PORT}`);
