@@ -1,4 +1,5 @@
-import {useRef, useEffect} from 'react';
+import {useRef, useEffect, useState} from 'react';
+import DebugContext from './DebugContext';
 import useWebSocket from './useWebSocket';
 import Map3d from './Map3d';
 import {Canvas, useThree} from '@react-three/fiber';
@@ -91,15 +92,16 @@ function Controls() {
 
 export default function App() {
   const connected = useWebSocket();
+  const [debugMode, setDebugMode] = useState(false);
   return (
-    <>
+    <DebugContext.Provider value={debugMode}>
       <Canvas style={{height: '100vh', backgroundColor: 'black'}} camera={{position: [0, 0, 5], fov: 40}} shadows>
         <Controls />
         <Map3d />
         <ambientLight intensity={0.5} />
         <directionalLight position={[-2, -3, 5]} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
       </Canvas>
-      <Toolbar connected={connected} />
-    </>
+      <Toolbar connected={connected} setDebugMode={setDebugMode} debugMode={debugMode} />
+    </DebugContext.Provider>
   );
 }
