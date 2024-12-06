@@ -1,8 +1,8 @@
 import {memo, useEffect, useMemo} from 'react';
 import type {Path, PathPoint} from '../types';
 import useStore from './Store';
-import {useTexture} from '@react-three/drei';
-import mapImage from './assets/map-test-large.jpg';
+import {useTexture, useGLTF} from '@react-three/drei';
+import mapImage from './assets/map-test-large.png';
 import {DoubleSide, Vector3, Euler} from 'three';
 import {useSpring, a} from '@react-spring/three';
 
@@ -11,10 +11,10 @@ const WIDTH = 5000 / 1000;
 const HEIGHT = 4297 / 1000;
 export const MAX_Z = 60000;
 
-function getPositionStyles(x: number, y: number): [number, number, number] {
+function getPositionStyles(x: number, y: number, zOverride = 0.04): [number, number, number] {
   const xPercentage = x / BATTLE_AREA.w;
   const yPercentage = y / BATTLE_AREA.h;
-  return [WIDTH * xPercentage - WIDTH / 1.7, HEIGHT * yPercentage - HEIGHT / 1.7, 0.04];
+  return [WIDTH * xPercentage - WIDTH / 1.7, HEIGHT * yPercentage - HEIGHT / 1.7, zOverride];
 }
 
 // const IMAGE_WIDTH = 5000;
@@ -46,9 +46,10 @@ interface ArrowProps {
 }
 
 const Arrow = memo(function Arrow({start, target, army}: ArrowProps) {
+  const {nodes} = useGLTF('/models/arrow.glb');
   const {rotation, startVec} = useMemo(() => {
-    const startVec = new Vector3(...getPositionStyles(start.x, start.y));
-    const targetVec = new Vector3(...getPositionStyles(target.x, target.y));
+    const startVec = new Vector3(...getPositionStyles(start.x, start.y, 0));
+    const targetVec = new Vector3(...getPositionStyles(target.x, target.y, 0));
     const direction = new Vector3().subVectors(targetVec, startVec).normalize();
     const height = 0.04;
     const adjustedPosition = startVec.clone().add(direction.clone().multiplyScalar(height / 2));
@@ -56,15 +57,16 @@ const Arrow = memo(function Arrow({start, target, army}: ArrowProps) {
     const dy = targetVec.y - startVec.y;
     const angle2 = Math.atan2(dy, dx);
     return {
-      rotation: new Euler(0, 0, angle2 + Math.PI * 1.5),
+      rotation: new Euler(0, 0, angle2),
       startVec: adjustedPosition,
     };
   }, [start, target]);
   return (
-    <mesh position={startVec} rotation={rotation}>
-      <coneGeometry args={[0.01, 0.035, 3]} />
-      <meshBasicMaterial color={army === 1 ? 'blue' : 'red'} transparent opacity={0.5} />
-    </mesh>
+    <group position={startVec} rotation={rotation} scale={[0.025, 0.025, 0.025]} receiveShadow castShadow>
+      <mesh geometry={(nodes.arrow as any).geometry}>
+        <meshPhysicalMaterial color={army === 1 ? 'blue' : 'red'} />
+      </mesh>
+    </group>
   );
 });
 
@@ -78,7 +80,7 @@ function Path({path}: PathProps) {
   for (const point of path.points) {
     const nextPoint = path.points[i + 1];
     if (nextPoint != null) {
-      line.push(<Arrow key={i} start={point} target={nextPoint} army={path.army} />);
+      line.push(<Arrow key={point.mission_time} start={point} target={nextPoint} army={path.army} />);
     }
     i++;
   }

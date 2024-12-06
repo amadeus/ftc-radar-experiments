@@ -30,7 +30,7 @@ export default create<StoreState>()((set) => {
             let paths = new Map();
             for (const state of worldState) {
               const newPaths = processAircraft(state);
-              paths = muxPaths(newPaths, paths);
+              paths = muxPaths(newPaths, paths, state.mission_time);
             }
             return {worldState, paths};
           }
@@ -41,7 +41,7 @@ export default create<StoreState>()((set) => {
               worldState.shift();
             }
             const newPaths = processAircraft(payload.data);
-            const paths = muxPaths(newPaths, state.paths);
+            const paths = muxPaths(newPaths, state.paths, payload.data.mission_time);
             return {worldState, paths};
           }
           default:
@@ -138,15 +138,15 @@ function checkTimeDifference(time1: string, time2: string) {
 
 // Take newly generated paths from a state update and mix them into existing
 // paths if they exist, otherwise add them to map data structure
-function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>): Map<SquadronId, Path> {
-  if (newPaths.length === 0) {
+function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>, missionTime: string): Map<SquadronId, Path> {
+  if (newPaths.length === 0 && paths.size === 0) {
     return paths;
   }
-  paths = new Map(paths);
+  const fixedPaths: Map<SquadronId, Path> = new Map();
   for (const path of newPaths) {
     let oldPath = paths.get(path.id);
     if (oldPath == null) {
-      paths.set(path.id, path);
+      fixedPaths.set(path.id, path);
     } else {
       oldPath = {...oldPath, currentPosition: path.currentPosition};
       const lastPoint = oldPath.points[oldPath.points.length - 1];
@@ -154,22 +154,41 @@ function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>): Map<SquadronI
       const oldPointVector = new Vector2(lastPoint.x, lastPoint.y);
       const newPointVector = new Vector2(currentPosition.x, currentPosition.y);
       const distance = Math.abs(oldPointVector.distanceTo(newPointVector));
+      let modifiedPoints = false;
       // If we've travelled far enough to warrant another arrow, lets add it
-      if (distance > 6000) {
+      if (distance > 5000) {
+        modifiedPoints = true;
         oldPath.points = [...oldPath.points, currentPosition];
       }
       while (
         oldPath.points.length > 1 &&
         checkTimeDifference(currentPosition.mission_time, oldPath.points[0].mission_time)
       ) {
+        if (!modifiedPoints) {
+          oldPath.points = [...oldPath.points, currentPosition];
+          modifiedPoints = true;
+        }
         oldPath.points.shift();
       }
-      paths.set(oldPath.id, oldPath);
+      fixedPaths.set(oldPath.id, oldPath);
+      paths.delete(oldPath.id);
     }
   }
-  // TODO(amadeus): We also need to iterate over any other points we haven't
-  // already processed from newPaths and begin removing old points that have.
-  // This could include aircraft/squadrons that have been destroyed or left
-  // radar coverage
-  return paths;
+
+  // Prune out older paths if needed
+  for (let [, ghostPath] of paths) {
+    let modifiedPoints = false;
+    while (ghostPath.points[0] != null && checkTimeDifference(missionTime, ghostPath.points[0].mission_time)) {
+      if (!modifiedPoints) {
+        ghostPath = {...ghostPath, points: [...ghostPath.points]};
+        modifiedPoints = true;
+      }
+      ghostPath.points.shift();
+    }
+    if (ghostPath.points.length > 0) {
+      fixedPaths.set(ghostPath.id, ghostPath);
+    }
+    paths.delete(ghostPath.id);
+  }
+  return fixedPaths;
 }
