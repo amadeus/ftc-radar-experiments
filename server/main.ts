@@ -4,10 +4,11 @@ import {PORT, UPDATE_RATE} from './server_constants';
 import {SocketActions} from '../constants';
 
 const updates = (await Bun.file('./server/updates-gzip.txt').text()).split('\n');
+const SERVER_TICK = 3;
 
-function decodeUpdate(updateFromServer: string, index: number) {
-  if (updateFromServer.trim() === '') {
-    return null;
+function decodeUpdate(updateFromServer: string | null, index: number): [WorldStateItem | null, boolean] {
+  if (updateFromServer == null || updateFromServer.trim() === '') {
+    return [null, false];
   }
   let textContent: string | undefined;
   try {
@@ -17,13 +18,13 @@ function decodeUpdate(updateFromServer: string, index: number) {
         .map((char) => char.charCodeAt(0))
     );
     textContent = new TextDecoder().decode(Bun.gunzipSync(binary));
-    return JSON.parse(textContent);
+    return [JSON.parse(textContent), false];
   } catch (e) {
     console.log(`DECODE FAILURE =======================================`);
     console.error(e);
     console.log(`======================================================`);
     console.log(`Crashed on line: ${index} with data: "${textContent ?? updateFromServer}"`);
-    return null;
+    return [null, true];
   }
 }
 
@@ -49,11 +50,14 @@ function iterateOverSockets() {
     worldState = [];
     initialDataJSON = JSON.stringify({type: SocketActions.INITIALIZE, data: []} as SocketInit);
   }
-  const update: WorldStateItem | null = decodeUpdate(updates[index], index);
-  if (update == null) {
+  const [update, error]: [WorldStateItem | null, boolean] = decodeUpdate(updates[index], index);
+  if (update == null && !error) {
     index = 0;
     worldState = [];
     console.error('iterateOverSockets: Invalid update, restarting');
+    return;
+  } else if (!update) {
+    index += 3;
     return;
   }
   worldState.push(update);
@@ -68,7 +72,7 @@ function iterateOverSockets() {
     }
     socket.send(updateDataJSON);
   }
-  index += 3;
+  index += SERVER_TICK;
 }
 
 console.log(`WebSocket server is running on ws://localhost:${PORT}`);
