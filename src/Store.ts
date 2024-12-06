@@ -165,7 +165,7 @@ function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>, missionTime: s
         checkTimeDifference(currentPosition.mission_time, oldPath.points[0].mission_time)
       ) {
         if (!modifiedPoints) {
-          oldPath.points = [...oldPath.points, currentPosition];
+          oldPath.points = [...oldPath.points];
           modifiedPoints = true;
         }
         oldPath.points.shift();
