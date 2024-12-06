@@ -156,7 +156,7 @@ function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>, missionTime: s
       const distance = Math.abs(oldPointVector.distanceTo(newPointVector));
       let modifiedPoints = false;
       // If we've travelled far enough to warrant another arrow, lets add it
-      if (distance > 5000) {
+      if (distance > 3000) {
         modifiedPoints = true;
         oldPath.points = [...oldPath.points, currentPosition];
       }

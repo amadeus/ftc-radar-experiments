@@ -31,3 +31,41 @@ export function getRandomInteger(min: number, max: number): number {
   }
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+interface Point {
+  x: number;
+  y: number;
+}
+
+function createSystemTranslator(
+  system1Point1: Point,
+  system1Point2: Point,
+  system2Point1: Point,
+  system2Point2: Point
+): (point: Point) => Point {
+  // Compute scaling factors
+  const scaleX = (system1Point2.x - system1Point1.x) / (system2Point2.x - system2Point1.x);
+  const scaleY = (system1Point2.y - system1Point1.y) / (system2Point2.y - system2Point1.y);
+
+  // Compute offsets
+  const offsetX = system1Point1.x - system2Point1.x * scaleX;
+  const offsetY = system1Point1.y - system2Point1.y * scaleY;
+
+  // Return the translator function
+  return (point: Point): Point => {
+    return {
+      x: point.x * scaleX + offsetX,
+      y: point.y * scaleY + offsetY,
+    };
+  };
+}
+
+// Reference points on the image
+const system1Point1 = {x: 1878, y: 999};
+const system1Point2 = {x: 9162, y: 8846};
+
+// Reference points from the world map:
+const system2Point1 = {x: 66531.3, y: 279437.2};
+const system2Point2 = {x: 301238.1, y: 28351.6};
+
+export const translator = createSystemTranslator(system1Point1, system1Point2, system2Point1, system2Point2);

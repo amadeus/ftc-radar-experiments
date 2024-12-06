@@ -5,22 +5,24 @@ import {useTexture, useGLTF} from '@react-three/drei';
 import mapImage from './assets/map-test-large.png';
 import {DoubleSide, Vector3, Euler} from 'three';
 import {useSpring, a} from '@react-spring/three';
-import {getRandomInteger} from '../utils';
+import {getRandomInteger, translator} from '../utils';
 import DebugContext from './DebugContext';
 
-const BATTLE_AREA = {x: 10000, y: 10000, w: 350000, h: 300000, sector_size: 10000};
-const WIDTH = 5000 / 1000;
-const HEIGHT = 4297 / 1000;
+// const BATTLE_AREA = {x: 10000, y: 10000, w: 350000, h: 300000, sector_size: 10000};
+const IMAGE_WIDTH = 11011;
+const IMAGE_HEIGHT = 9474;
+const WIDTH = IMAGE_WIDTH / 1000;
+const HEIGHT = IMAGE_HEIGHT / 1000;
 export const MAX_Z = 60000;
 
 function getPositionStyles(x: number, y: number, zOverride = 0.04): [number, number, number] {
-  const xPercentage = x / BATTLE_AREA.w;
-  const yPercentage = y / BATTLE_AREA.h;
-  return [WIDTH * xPercentage - WIDTH / 1.7, HEIGHT * yPercentage - HEIGHT / 1.7, zOverride];
+  const coords = translator({x, y});
+  return [
+    (coords.x / IMAGE_WIDTH) * WIDTH - WIDTH / 2,
+    HEIGHT - (coords.y / IMAGE_HEIGHT) * HEIGHT - HEIGHT / 2,
+    zOverride,
+  ];
 }
-
-// const IMAGE_WIDTH = 5000;
-// const IMAGE_HEIGHT = 4297;
 
 interface MarkerBlockProps {
   path: Path;
@@ -123,7 +125,7 @@ export default memo(function Map3d() {
   return (
     <group position={[0, 0, 0]}>
       <mesh receiveShadow>
-        <planeGeometry args={[5, 4.297]} />
+        <planeGeometry args={[WIDTH, HEIGHT]} />
         <meshStandardMaterial map={texture} side={DoubleSide} />
       </mesh>
       {renderedPaths}
