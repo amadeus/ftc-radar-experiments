@@ -1,7 +1,7 @@
 import {memo} from 'react';
 import useStore from './Store';
 import {useTexture} from '@react-three/drei';
-import mapImage from './assets/map-test-large.png';
+import mapImage from './assets/map-test-large.jpg';
 import {DoubleSide} from 'three';
 import MapPath from './markers/MapPath';
 import {MAP_MODEL_WIDTH, MAP_MODEL_HEIGHT} from './markers/getPositionStyles';
