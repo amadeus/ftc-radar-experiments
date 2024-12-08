@@ -22,12 +22,12 @@ export default memo(function Path({path}: PathProps) {
     [debugMode]
   );
 
-  const renderedLined: React.ReactNode[] = [];
+  const renderedLines: React.ReactNode[] = [];
   let i = 0;
   for (const point of path.points) {
     const nextPoint = path.points[i + 1];
     if (nextPoint != null) {
-      renderedLined.push(
+      renderedLines.push(
         <Arrow
           key={`${path.id}-${point.missionTime}`}
           start={point}
@@ -41,7 +41,7 @@ export default memo(function Path({path}: PathProps) {
   const {x, y, z} = path.currentPosition;
   return (
     <>
-      {renderedLined}
+      {renderedLines}
       <PathInfoBlock
         x={x}
         y={y}
