@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "tsc-app": "tsc --noEmit --project tsconfig.app.json",
     "tsc-server": "tsc --noEmit --project ./server/tsconfig.json",
-    "server": "bun server/main.ts"
+    "server": "bun server/main.ts",
+    "generate-component": "pnpx gltfjsx"
   },
   "dependencies": {
     "@react-spring/three": "^9.7.5",
