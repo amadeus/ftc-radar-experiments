@@ -69,6 +69,9 @@ importers:
       globals:
         specifier: ^15.12.0
         version: 15.13.0
+      three-stdlib:
+        specifier: ^2.34.0
+        version: 2.34.0(three@0.171.0)
       typescript:
         specifier: ^5.7.2
         version: 5.7.2

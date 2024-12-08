@@ -1,10 +1,21 @@
 import {useMemo, memo} from 'react';
 import {useGLTF} from '@react-three/drei';
-import {Vector3, Euler} from 'three';
+import {Vector3, Euler, type Mesh, type Material} from 'three';
 import type {PathPoint} from '../../types';
 import getPositionStyles from './getPositionStyles';
+import {GLTF} from 'three-stdlib';
 
 const ARROW_SCALE: [number, number, number] = [0.005, 0.002, 0.005];
+
+interface GLTFResult extends GLTF {
+  nodes: {
+    arrow: Mesh;
+  };
+  materials: {
+    [name: string]: Material;
+  };
+  animations: [];
+}
 
 interface ArrowProps {
   start: PathPoint;
@@ -14,7 +25,7 @@ interface ArrowProps {
 }
 
 export default memo(function Arrow({start, target, army, overrideColor}: ArrowProps) {
-  const {nodes} = useGLTF('/models/arrow-basic.glb');
+  const {nodes} = useGLTF('/models/arrow-basic.glb') as GLTFResult;
   const {rotation, startVec} = useMemo(() => {
     const startVec = new Vector3(...getPositionStyles(start.x, start.y, 0.005));
     const targetVec = new Vector3(...getPositionStyles(target.x, target.y, 0.005));
@@ -31,7 +42,7 @@ export default memo(function Arrow({start, target, army, overrideColor}: ArrowPr
   }, [start, target]);
   return (
     <group position={startVec} rotation={rotation} scale={ARROW_SCALE}>
-      <mesh geometry={(nodes.arrow as any).geometry} receiveShadow castShadow>
+      <mesh geometry={nodes.arrow.geometry} receiveShadow castShadow>
         <meshPhysicalMaterial color={overrideColor != null ? overrideColor : army === 1 ? 'blue' : 'red'} />
       </mesh>
     </group>

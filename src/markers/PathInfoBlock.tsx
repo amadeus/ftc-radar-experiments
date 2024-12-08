@@ -5,8 +5,20 @@ import {getRandomFloat} from '../utils';
 import getPositionStyles from './getPositionStyles';
 import TileTextRow from './TileTextRow';
 import {BROWN} from './constants';
+import type {GLTF} from 'three-stdlib';
+import type {Mesh, Material} from 'three';
 
 const BLOCK_SCALE: [number, number, number] = [0.056, 0.045, 0.032];
+
+type GLTFResult = GLTF & {
+  nodes: {
+    cube: Mesh;
+  };
+  materials: {
+    [name: string]: Material;
+  };
+  animations: [];
+};
 
 interface MarkerBlockProps {
   x: number;
@@ -20,8 +32,9 @@ interface MarkerBlockProps {
 }
 
 export default memo(function MarkerBlock({x, y, z, army, colorOverride, units, displayId, onClick}: MarkerBlockProps) {
-  // NOTE(amadeus): We can't really type this data properly, so have to cast as any...
-  const cube = useGLTF('/models/block-basic.glb').nodes.Cube as any;
+  const {
+    nodes: {cube},
+  } = useGLTF('/models/block-basic.glb') as GLTFResult;
   const rotation = useMemo(() => {
     const angle = getRandomFloat(-95, -85);
     return [Math.PI / 2, angle * (Math.PI / 180), 0] as [number, number, number];
