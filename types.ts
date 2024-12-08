@@ -58,6 +58,7 @@ export interface PathContext {
   id: SquadronId;
   units: number;
   army: number;
+  displayId: string;
 }
 
 export interface Path extends PathContext {

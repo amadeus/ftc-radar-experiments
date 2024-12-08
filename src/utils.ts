@@ -1,4 +1,4 @@
-import type {STruple, SquadronId} from './types';
+import type {STruple, SquadronId} from '../types';
 
 export function isStringTuple(arr: string[]): arr is STruple {
   return arr.length === 3;
@@ -30,6 +30,13 @@ export function getRandomInteger(min: number, max: number): number {
     throw new Error('min must be less than or equal to max');
   }
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function getRandomFloat(min: number, max: number): number {
+  if (min > max) {
+    throw new Error('min must be less than or equal to max');
+  }
+  return Math.random() * (max - min + 1) + min;
 }
 
 interface Point {

@@ -2,7 +2,7 @@ import {create} from 'zustand';
 import type {SocketUpdate, SocketInit, WorldStateItem, Path, SquadronId} from '../types';
 import {MAX_WORLD_STATES, SocketActions} from '../constants';
 import {Vector3, Vector2} from 'three';
-import {parseId} from '../utils';
+import {parseId} from './utils';
 
 type SocketPayload = SocketUpdate | SocketInit;
 
@@ -51,6 +51,8 @@ export default create<StoreState>()((set) => {
     },
   };
 });
+
+let hostileSquadronIndex = 0;
 
 interface AggregatePoint {
   squadronId: SquadronId;
@@ -113,6 +115,7 @@ function processAircraft(state: WorldStateItem) {
       army: squadronState.army,
       currentPosition,
       points: [currentPosition],
+      displayId: '--no-id',
     });
   }
   return squadronPoints;
@@ -146,6 +149,15 @@ function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>, missionTime: s
   for (const path of newPaths) {
     let oldPath = paths.get(path.id);
     if (oldPath == null) {
+      // NOTE(amadeus): Really hacky way to determine display path id.  For
+      // friendlies we try to derive the flight number, for hostiles we keep
+      // track of a unique index
+      if (path.army === 1) {
+        const displayId = path.id.match(/_([^_]+)_Early$/)?.[1] ?? `${++hostileSquadronIndex}`;
+        path.displayId = displayId.replace(/Sqn/g, '');
+      } else {
+        path.displayId = `${++hostileSquadronIndex}`.padStart(2, '0');
+      }
       fixedPaths.set(path.id, path);
     } else {
       oldPath = {...oldPath, currentPosition: path.currentPosition};

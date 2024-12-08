@@ -1,7 +1,7 @@
 import {useRef, useEffect, useState} from 'react';
 import DebugContext from './DebugContext';
 import useWebSocket from './useWebSocket';
-import Map3d from './Map3d';
+import Map from './Map';
 import {Canvas, useThree} from '@react-three/fiber';
 import {OrbitControls} from '@react-three/drei';
 import Toolbar from './Toolbar';
@@ -97,9 +97,9 @@ export default function App() {
     <DebugContext.Provider value={debugMode}>
       <Canvas style={{height: '100vh', backgroundColor: 'black'}} camera={{position: [0, 0, 5], fov: 40}} shadows>
         <Controls />
-        <Map3d />
+        <Map />
         <ambientLight intensity={0.5} />
-        <directionalLight position={[-2, -3, 5]} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
+        <directionalLight position={[-2, -3, 5]} castShadow shadow-mapSize-width={8192} shadow-mapSize-height={8192} />
       </Canvas>
       <Toolbar connected={connected} setDebugMode={setDebugMode} debugMode={debugMode} />
     </DebugContext.Provider>
