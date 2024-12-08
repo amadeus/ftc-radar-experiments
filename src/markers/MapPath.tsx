@@ -32,8 +32,7 @@ export default memo(function Path({path}: PathProps) {
           key={`${path.id}-${point.missionTime}`}
           start={point}
           target={nextPoint}
-          army={path.army}
-          overrideColor={debugColor ?? getMinuteColor(getTimeAsNumbers(point.missionTime).minutes)}
+          color={debugColor ?? getMinuteColor(getTimeAsNumbers(point.missionTime).minutes)}
         />
       );
     }

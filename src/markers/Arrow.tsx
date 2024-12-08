@@ -20,11 +20,10 @@ interface GLTFResult extends GLTF {
 interface ArrowProps {
   start: PathPoint;
   target: PathPoint;
-  army: number;
-  overrideColor?: string;
+  color: string;
 }
 
-export default memo(function Arrow({start, target, army, overrideColor}: ArrowProps) {
+export default memo(function Arrow({start, target, color}: ArrowProps) {
   const {nodes} = useGLTF('/models/arrow-basic.glb') as GLTFResult;
   const {rotation, startVec} = useMemo(() => {
     const startVec = new Vector3(...getPositionStyles(start.x, start.y, 0.005));
@@ -43,7 +42,7 @@ export default memo(function Arrow({start, target, army, overrideColor}: ArrowPr
   return (
     <group position={startVec} rotation={rotation} scale={ARROW_SCALE}>
       <mesh geometry={nodes.arrow.geometry} receiveShadow castShadow>
-        <meshPhysicalMaterial color={overrideColor != null ? overrideColor : army === 1 ? 'blue' : 'red'} />
+        <meshPhysicalMaterial color={color} />
       </mesh>
     </group>
   );
