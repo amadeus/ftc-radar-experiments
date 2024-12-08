@@ -4,8 +4,8 @@
   width: 100px;
   height: 100px;
   border-radius: 50px;
-  bottom: 10px;
-  left: 10px;
+  top: 10px;
+  right: 10px;
   background-image: url('./assets/sector-clock.png');
   background-size: 100% 100%;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);

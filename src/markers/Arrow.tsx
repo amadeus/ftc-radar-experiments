@@ -4,7 +4,7 @@ import {Vector3, Euler} from 'three';
 import type {PathPoint} from '../../types';
 import getPositionStyles from './getPositionStyles';
 
-const ARROW_SCALE: [number, number, number] = [0.025, 0.025, 0.025];
+const ARROW_SCALE: [number, number, number] = [0.005, 0.002, 0.005];
 
 interface ArrowProps {
   start: PathPoint;
@@ -14,10 +14,10 @@ interface ArrowProps {
 }
 
 export default memo(function Arrow({start, target, army, overrideColor}: ArrowProps) {
-  const {nodes} = useGLTF('/models/arrow.glb');
+  const {nodes} = useGLTF('/models/arrow-basic.glb');
   const {rotation, startVec} = useMemo(() => {
-    const startVec = new Vector3(...getPositionStyles(start.x, start.y, 0));
-    const targetVec = new Vector3(...getPositionStyles(target.x, target.y, 0));
+    const startVec = new Vector3(...getPositionStyles(start.x, start.y, 0.005));
+    const targetVec = new Vector3(...getPositionStyles(target.x, target.y, 0.005));
     const direction = new Vector3().subVectors(targetVec, startVec).normalize();
     const height = 0.04;
     const adjustedPosition = startVec.clone().add(direction.clone().multiplyScalar(height / 2));
@@ -25,7 +25,7 @@ export default memo(function Arrow({start, target, army, overrideColor}: ArrowPr
     const dy = targetVec.y - startVec.y;
     const angle2 = Math.atan2(dy, dx);
     return {
-      rotation: new Euler(0, 0, angle2),
+      rotation: new Euler(Math.PI / 2, angle2, 0),
       startVec: adjustedPosition,
     };
   }, [start, target]);
