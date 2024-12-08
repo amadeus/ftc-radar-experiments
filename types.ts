@@ -25,8 +25,7 @@ export interface WorldStateItem {
     sector_size: number;
   };
   map_name: string;
-  // FIXME: Can this annotation be improved?
-  mission_time: string;
+  mission_time: MissionTime;
 }
 
 export type WebsocketConnectionState = 'disconnected' | 'connecting' | 'connected';
@@ -48,7 +47,7 @@ export type STruple = [string, string, string];
 export type SquadronId = `${number}.${string}`;
 
 export interface PathPoint {
-  mission_time: string;
+  missionTime: MissionTime;
   x: number;
   y: number;
   z: number;
@@ -65,3 +64,5 @@ export interface Path extends PathContext {
   currentPosition: PathPoint;
   points: PathPoint[];
 }
+
+export type MissionTime = `${number}:${number}:${number}`;

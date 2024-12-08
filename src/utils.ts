@@ -1,4 +1,4 @@
-import type {STruple, SquadronId} from '../types';
+import type {STruple, SquadronId, MissionTime} from '../types';
 
 export function isStringTuple(arr: string[]): arr is STruple {
   return arr.length === 3;
@@ -76,3 +76,14 @@ const system2Point1 = {x: 66531.3, y: 279437.2};
 const system2Point2 = {x: 301238.1, y: 28351.6};
 
 export const translator = createSystemTranslator(system1Point1, system1Point2, system2Point1, system2Point2);
+
+interface DeconstructedTime {
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+export function getTimeAsNumbers(missionTime: MissionTime): DeconstructedTime {
+  const [hours, minutes, seconds] = missionTime.split(':');
+  return {hours: parseInt(hours, 10), minutes: parseInt(minutes, 10), seconds: parseFloat(seconds)};
+}

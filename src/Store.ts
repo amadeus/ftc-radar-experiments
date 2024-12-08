@@ -1,8 +1,9 @@
 import {create} from 'zustand';
-import type {SocketUpdate, SocketInit, WorldStateItem, Path, SquadronId} from '../types';
 import {MAX_WORLD_STATES, SocketActions} from '../constants';
 import {Vector3, Vector2} from 'three';
-import {parseId} from './utils';
+import {parseId, getTimeAsNumbers} from './utils';
+import {getMinuteColor} from './markers/constants';
+import type {SocketUpdate, SocketInit, WorldStateItem, Path, SquadronId, MissionTime} from '../types';
 
 type SocketPayload = SocketUpdate | SocketInit;
 
@@ -10,6 +11,7 @@ type StoreDispatch = (payload: SocketPayload) => void;
 
 interface StoreState {
   worldState: WorldStateItem[];
+  missionTime: MissionTime;
   paths: Map<SquadronId, Path>;
   dispatch: StoreDispatch;
 }
@@ -17,6 +19,7 @@ interface StoreState {
 export default create<StoreState>()((set) => {
   return {
     worldState: [],
+    missionTime: '00:00:00',
     paths: new Map(),
     dispatch(payload: SocketPayload) {
       // NOTE(amadeus): Test whether we need a batch update or not...
@@ -28,11 +31,13 @@ export default create<StoreState>()((set) => {
               worldState.shift();
             }
             let paths = new Map();
+            let missionTime = state.missionTime;
             for (const state of worldState) {
               const newPaths = processAircraft(state);
               paths = muxPaths(newPaths, paths, state.mission_time);
+              missionTime = state.mission_time;
             }
-            return {worldState, paths};
+            return {worldState, paths, missionTime};
           }
           case SocketActions.UPDATE: {
             const worldState = [...state.worldState];
@@ -42,7 +47,7 @@ export default create<StoreState>()((set) => {
             }
             const newPaths = processAircraft(payload.data);
             const paths = muxPaths(newPaths, state.paths, payload.data.mission_time);
-            return {worldState, paths};
+            return {worldState, paths, missionTime: payload.data.mission_time};
           }
           default:
             return state;
@@ -104,7 +109,7 @@ function processAircraft(state: WorldStateItem) {
     }
     sum.divideScalar(squadronState.points.length + 2);
     const currentPosition = {
-      mission_time: state.mission_time,
+      missionTime: state.mission_time,
       x: sum.x,
       y: sum.y,
       z: sum.z,
@@ -141,11 +146,12 @@ function checkTimeDifference(time1: string, time2: string) {
 
 // Take newly generated paths from a state update and mix them into existing
 // paths if they exist, otherwise add them to map data structure
-function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>, missionTime: string): Map<SquadronId, Path> {
+function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>, missionTime: MissionTime): Map<SquadronId, Path> {
   if (newPaths.length === 0 && paths.size === 0) {
     return paths;
   }
   const fixedPaths: Map<SquadronId, Path> = new Map();
+  const currentColor = getMinuteColor(getTimeAsNumbers(missionTime).minutes);
   for (const path of newPaths) {
     let oldPath = paths.get(path.id);
     if (oldPath == null) {
@@ -172,10 +178,13 @@ function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>, missionTime: s
         modifiedPoints = true;
         oldPath.points = [...oldPath.points, currentPosition];
       }
-      while (
-        oldPath.points.length > 1 &&
-        checkTimeDifference(currentPosition.mission_time, oldPath.points[0].mission_time)
-      ) {
+
+      while (oldPath.points.length > 1) {
+        const firstPoint = oldPath.points[0];
+        if (!checkTimeDifference(currentPosition.missionTime, firstPoint.missionTime)) break;
+        const {minutes} = getTimeAsNumbers(firstPoint.missionTime);
+        const pointColor = getMinuteColor(minutes);
+        if (pointColor !== currentColor) break;
         if (!modifiedPoints) {
           oldPath.points = [...oldPath.points];
           modifiedPoints = true;
@@ -190,7 +199,12 @@ function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>, missionTime: s
   // Prune out older paths if needed
   for (let [, ghostPath] of paths) {
     let modifiedPoints = false;
-    while (ghostPath.points[0] != null && checkTimeDifference(missionTime, ghostPath.points[0].mission_time)) {
+    while (ghostPath.points[0] != null) {
+      const firstPoint = ghostPath.points[0];
+      if (!checkTimeDifference(missionTime, firstPoint.missionTime)) break;
+      const {minutes} = getTimeAsNumbers(firstPoint.missionTime);
+      const pointColor = getMinuteColor(minutes);
+      if (pointColor !== currentColor) break;
       if (!modifiedPoints) {
         ghostPath = {...ghostPath, points: [...ghostPath.points]};
         modifiedPoints = true;

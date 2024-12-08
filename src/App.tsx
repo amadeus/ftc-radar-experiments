@@ -6,6 +6,7 @@ import {Canvas, useThree} from '@react-three/fiber';
 import {OrbitControls} from '@react-three/drei';
 import Toolbar from './Toolbar';
 import {Vector3} from 'three';
+import Clock from './Clock';
 import type {Tuple} from '../types';
 
 const MIN_Z_CAMERA = 0.8273704858012328;
@@ -102,6 +103,7 @@ export default function App() {
         <directionalLight position={[-2, -3, 5]} castShadow shadow-mapSize-width={8192} shadow-mapSize-height={8192} />
       </Canvas>
       <Toolbar connected={connected} setDebugMode={setDebugMode} debugMode={debugMode} />
+      <Clock />
     </DebugContext.Provider>
   );
 }

@@ -1,13 +1,8 @@
 import {useMemo, memo} from 'react';
 import {Text} from '@react-three/drei';
+import {RED, BLUE, YELLOW, WHITE, BLACK} from './constants';
 
 type RowType = 'top' | 'middle' | 'bottom';
-
-const TILE_RED = '#bf1934';
-const TILE_BLUE = '#0029af';
-const TILE_YELLOW = '#e1d900';
-const TILE_WHITE = '#ffffff';
-const TILE_BLACK = '#000000';
 
 const RowConstants = {
   bottom: {
@@ -55,14 +50,14 @@ export default memo(function TileTextRow({row, text, army}: TileTextRowProps) {
     const renderedMeshes: React.ReactNode[] = [];
     const {textColor, tileColor} = (() => {
       if (row === 'top' && army === 1) {
-        return {textColor: TILE_WHITE, tileColor: TILE_RED};
+        return {textColor: WHITE, tileColor: RED};
       } else if (row === 'top') {
-        return {textColor: TILE_BLACK, tileColor: TILE_YELLOW};
+        return {textColor: BLACK, tileColor: YELLOW};
       }
       if (row === 'middle') {
-        return {textColor: TILE_WHITE, tileColor: TILE_RED};
+        return {textColor: WHITE, tileColor: RED};
       }
-      return {textColor: TILE_WHITE, tileColor: TILE_BLUE};
+      return {textColor: WHITE, tileColor: BLUE};
     })();
 
     // Top row prefixes
@@ -70,8 +65,8 @@ export default memo(function TileTextRow({row, text, army}: TileTextRowProps) {
       renderedMeshes.push(
         <mesh position={[0, 0, 0.029 * 0 * -1]} key="prefix" castShadow receiveShadow>
           <boxGeometry args={TILE_ARGS} />
-          <meshStandardMaterial color={TILE_WHITE} />
-          <Text {...TEXT_PROPS} rotation={textRotation} color={TILE_RED}>
+          <meshStandardMaterial color={WHITE} />
+          <Text {...TEXT_PROPS} rotation={textRotation} color={RED}>
             F
           </Text>
         </mesh>

@@ -4,6 +4,7 @@ import {useGLTF} from '@react-three/drei';
 import {getRandomFloat} from '../utils';
 import getPositionStyles from './getPositionStyles';
 import TileTextRow from './TileTextRow';
+import {BROWN} from './constants';
 
 const BLOCK_SCALE: [number, number, number] = [0.056, 0.045, 0.032];
 
@@ -44,7 +45,7 @@ export default memo(function MarkerBlock({x, y, z, army, colorOverride, units, d
     () => (
       <a.group position={position} rotation={rotation}>
         <a.mesh scale={BLOCK_SCALE} geometry={cube.geometry} castShadow receiveShadow onClick={onClick}>
-          <meshStandardMaterial color={colorOverride != null ? colorOverride : '#4a2916'} />
+          <meshStandardMaterial color={colorOverride != null ? colorOverride : BROWN} />
         </a.mesh>
         <TileTextRow row="top" text={displayId} army={army} />
         <TileTextRow row="middle" text={strength} army={army} />

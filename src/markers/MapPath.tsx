@@ -1,9 +1,10 @@
 import {useContext, memo, useMemo} from 'react';
 import DebugContext from '../DebugContext';
-import {getRandomInteger} from '../utils';
+import {getRandomInteger, getTimeAsNumbers} from '../utils';
 import Arrow from './Arrow';
 import PathInfoBlock from './PathInfoBlock';
 import type {Path} from '../../types';
+import {getMinuteColor} from './constants';
 import useStableCallback from '../hooks/useStableCallback';
 
 interface PathProps {
@@ -28,11 +29,11 @@ export default memo(function Path({path}: PathProps) {
     if (nextPoint != null) {
       renderedLined.push(
         <Arrow
-          key={`${path.id}-${point.mission_time}`}
+          key={`${path.id}-${point.missionTime}`}
           start={point}
           target={nextPoint}
           army={path.army}
-          overrideColor={debugColor}
+          overrideColor={debugColor ?? getMinuteColor(getTimeAsNumbers(point.missionTime).minutes)}
         />
       );
     }
