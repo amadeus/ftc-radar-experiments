@@ -1,0 +1,2 @@
+server/updates-gzip.txt filter=lfs diff=lfs merge=lfs -text
+src/assets/map-test-large.png filter=lfs diff=lfs merge=lfs -text

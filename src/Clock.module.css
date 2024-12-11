@@ -1,0 +1,48 @@
+.container {
+  position: absolute;
+  background-color: white;
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  top: 10px;
+  right: 10px;
+  background-image: url('./assets/sector-clock.png');
+  background-size: 100% 100%;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.minuteHand {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 48px;
+  background-color: black;
+  border-radius: 1px 1px 0 0;
+  transform-origin: 50% 100%;
+  margin-left: -1px;
+}
+
+.hourHand {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 22px;
+  background-color: black;
+  border-radius: 2px;
+  transform-origin: 50% 100%;
+  margin-left: -2px;
+}
+
+.handCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background-color: black;
+  border-radius: 4px;
+  margin-left: -3px;
+  margin-top: -3px;
+}
