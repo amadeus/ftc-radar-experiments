@@ -79,7 +79,7 @@ however, certain features of react-three-fiber are not very hot reload
 friendly, so you may still have to manually refresh to see certain types of
 changes reflected in browser.
 
-## Types, Linting &mp; Formatting
+## Types, Linting &amp; Formatting
 
 All of the projects are fully typed in
 [Typescript](https://www.typescriptlang.org/), linted with
