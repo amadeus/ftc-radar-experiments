@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "prettier": "prettier -w ./",
+    "prettier-check": "prettier ./",
     "preview": "vite preview",
     "tsc-app": "tsc --noEmit --project tsconfig.app.json",
     "tsc-socket": "tsc --noEmit --project ./socket/tsconfig.json",
