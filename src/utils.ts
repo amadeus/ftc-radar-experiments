@@ -87,3 +87,13 @@ export function getTimeAsNumbers(missionTime: MissionTime): DeconstructedTime {
   const [hours, minutes, seconds] = missionTime.split(':');
   return {hours: parseInt(hours, 10), minutes: parseInt(minutes, 10), seconds: parseFloat(seconds)};
 }
+
+export function timeToMilliseconds({hours, minutes, seconds}: DeconstructedTime): number {
+  return hours * 3600000 + minutes * 60000 + seconds * 1000;
+}
+
+export function getTimeDifferenceInMS(missionTime1: MissionTime, missionTime2: MissionTime): number {
+  const time1 = timeToMilliseconds(getTimeAsNumbers(missionTime1));
+  const time2 = timeToMilliseconds(getTimeAsNumbers(missionTime2));
+  return time2 - time1;
+}

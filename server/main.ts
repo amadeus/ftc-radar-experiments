@@ -4,7 +4,7 @@ import {PORT, UPDATE_RATE} from './server_constants';
 import {SocketActions} from '../constants';
 
 const updates = (await Bun.file('./server/updates-gzip.txt').text()).split('\n');
-const SERVER_TICK = 3;
+const SERVER_TICK = 59 * 3;
 
 function decodeUpdate(updateFromServer: string | null, index: number): [WorldStateItem | null, boolean] {
   if (updateFromServer == null || updateFromServer.trim() === '') {

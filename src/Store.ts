@@ -1,9 +1,11 @@
 import {create} from 'zustand';
 import {MAX_WORLD_STATES, SocketActions} from '../constants';
 import {Vector3, Vector2} from 'three';
-import {parseId, getTimeAsNumbers} from './utils';
+import {parseId, getTimeAsNumbers, getTimeDifferenceInMS} from './utils';
 import {getMinuteColor} from './markers/constants';
 import type {SocketUpdate, SocketInit, WorldStateItem, Path, SquadronId, MissionTime} from '../types';
+
+const TEN_MINUTES_IN_MS = 10 * 60 * 1000;
 
 type SocketPayload = SocketUpdate | SocketInit;
 
@@ -126,24 +128,6 @@ function processAircraft(state: WorldStateItem) {
   return squadronPoints;
 }
 
-// NOTE(amadeus): This is horrible AI code lol.. probably revisit it for proper
-// type safety...
-function timeToMilliseconds(timeStr: string) {
-  const [hours, minutes, seconds] = timeStr.split(':');
-  const [secs, millis] = seconds.split('.');
-  return parseInt(hours) * 3600000 + parseInt(minutes) * 60000 + parseInt(secs) * 1000 + parseInt(millis);
-}
-
-// NOTE(amadeus): This is horrible AI code lol.. probably revisit it for proper
-// type safety...
-function checkTimeDifference(time1: string, time2: string) {
-  const time1Ms = timeToMilliseconds(time1);
-  const time2Ms = timeToMilliseconds(time2);
-  const diff = Math.abs(time1Ms - time2Ms);
-  const tenMinutesInMs = 10 * 60 * 1000;
-  return diff > tenMinutesInMs;
-}
-
 // Take newly generated paths from a state update and mix them into existing
 // paths if they exist, otherwise add them to map data structure
 function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>, missionTime: MissionTime): Map<SquadronId, Path> {
@@ -181,7 +165,7 @@ function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>, missionTime: M
 
       while (oldPath.points.length > 1) {
         const firstPoint = oldPath.points[0];
-        if (!checkTimeDifference(currentPosition.missionTime, firstPoint.missionTime)) break;
+        if (getTimeDifferenceInMS(firstPoint.missionTime, currentPosition.missionTime) < TEN_MINUTES_IN_MS) break;
         const {minutes} = getTimeAsNumbers(firstPoint.missionTime);
         const pointColor = getMinuteColor(minutes);
         if (pointColor !== currentColor) break;
@@ -201,7 +185,7 @@ function muxPaths(newPaths: Path[], paths: Map<SquadronId, Path>, missionTime: M
     let modifiedPoints = false;
     while (ghostPath.points[0] != null) {
       const firstPoint = ghostPath.points[0];
-      if (!checkTimeDifference(missionTime, firstPoint.missionTime)) break;
+      if (getTimeDifferenceInMS(firstPoint.missionTime, missionTime) < TEN_MINUTES_IN_MS) break;
       const {minutes} = getTimeAsNumbers(firstPoint.missionTime);
       const pointColor = getMinuteColor(minutes);
       if (pointColor !== currentColor) break;
