@@ -1,6 +1,6 @@
 import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import {PORT} from './server/server_constants';
+import {PORT} from './socket/socket_constants';
 
 // https://vite.dev/config/
 export default defineConfig({

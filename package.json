@@ -7,10 +7,11 @@
     "dev": "vite --host",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "prettier": "prettier -w ./",
     "preview": "vite preview",
     "tsc-app": "tsc --noEmit --project tsconfig.app.json",
-    "tsc-server": "tsc --noEmit --project ./server/tsconfig.json",
-    "server": "bun server/main.ts",
+    "tsc-socket": "tsc --noEmit --project ./socket/tsconfig.json",
+    "socket": "bun socket/index.ts",
     "generate-component": "pnpx gltfjsx"
   },
   "dependencies": {
