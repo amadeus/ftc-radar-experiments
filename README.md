@@ -43,8 +43,8 @@ two simultaenous services at the same time.
    reloads the front end assets and dependencies.
 
 The goal of the generalized websocket is to act as a fake game interface, and
-is being maintained to act as the game server would, enabling us to run it as a
-proxy during development.
+is being maintained to act as the game server would, it is our proxy for a game
+server during development.
 
 There are two separate commands to run the websocket and web server, both of
 which need to be run in separate terminal windows or tabs. The order is
